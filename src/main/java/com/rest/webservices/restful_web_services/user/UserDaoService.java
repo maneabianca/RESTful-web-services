@@ -2,6 +2,7 @@ package com.rest.webservices.restful_web_services.user;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class UserDaoService {
 		users.add(new User(3, "Jim", LocalDate.now().minusYears(20)));		
 	}
 	
-	public List<User> findAll(){
+	public List<User> findAll(){		
 		return users;
 	}
 	
@@ -29,11 +30,23 @@ public class UserDaoService {
 		}
 		users.add(user);
 		return user;		
-	}
 	
+	}
 	public User findOne(int id) {
 		for(User user: users) {
 			if(user.getId() == id) {
+				return user;
+			}
+		}
+		return null;
+	}
+	
+	public User deleteById(int id) {
+		Iterator<User> iterator = users.iterator();
+		while(iterator.hasNext()) {
+			User user = iterator.next();
+			if(user.getId() == id) {
+				iterator.remove();
 				return user;
 			}
 		}

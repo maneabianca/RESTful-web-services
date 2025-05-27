@@ -9,6 +9,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import jakarta.validation.Valid;
 
@@ -49,6 +55,17 @@ public class UserResource {
 		model.add(linkTo.withRel("all-users"));
 		
 		return model;
+		
+		/*
+		//Dynamic Filtering + adding annotation in User class => @JsonFilter("SomeBeanFilter")
+		SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id","name");		
+		FilterProvider filters = new SimpleFilterProvider().addFilter("SomeBeanFilter", filter);		
+		MappingJacksonValue mapping = new MappingJacksonValue(user);
+		mapping.setFilters(filters);
+		
+		
+		return mapping;
+		*/
 	}
 	
 	// input - details of user

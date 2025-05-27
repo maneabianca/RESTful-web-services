@@ -4,6 +4,10 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,19 +27,28 @@ public class UserResource {
 	
 	//GET /users
 	@GetMapping("/users")
-	public List<User> retrieveAllUser(){
+	public List<User> retrieveAllUsers(){
 		return service.findAll();
 	}
 
+
 	//GET /users
+	//We are returning a resource which has both data and links
 	@GetMapping("/users/{id}")
-	public User retrieveUser(@PathVariable int id) {
+	public EntityModel<User> retrieveUser(@PathVariable int id) {
 		
 		User user = service.findOne(id);
 		if(user == null) {
 			throw new UserNotFoundException("id- "+ id);
 		}
-		return user;
+		
+		// HATEOAS -> easily add links using the methods
+		// "all-users", SERVER_PATH + "/users"
+		EntityModel<User> model = EntityModel.of(user);
+		WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+		model.add(linkTo.withRel("all-users"));
+		
+		return model;
 	}
 	
 	// input - details of user
